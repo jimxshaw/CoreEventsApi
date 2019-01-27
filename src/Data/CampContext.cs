@@ -23,7 +23,7 @@ namespace CoreCodeCamp.Data
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-      optionsBuilder.UseSqlServer(_config.GetConnectionString("CodeCamp"));
+      optionsBuilder.UseNpgsql(_config.GetConnectionString("DefaultConnection"));
     }
 
     protected override void OnModelCreating(ModelBuilder bldr)

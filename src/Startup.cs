@@ -30,7 +30,7 @@ namespace CoreCodeCamp
 
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddDbContext<CampContext>(options => options.UseNpgsql(Configuration["DefaultConnection"]))
+      services.AddDbContext<CampContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")))
               .BuildServiceProvider();
 
       services.AddScoped<ICampRepository, CampRepository>();
