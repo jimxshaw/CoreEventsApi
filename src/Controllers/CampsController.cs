@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CoreCodeCamp.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoreCodeCamp.Controllers
@@ -10,10 +12,26 @@ namespace CoreCodeCamp.Controllers
     [Route("api/[controller]")]
     public class CampsController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult GetCamps() 
+        private readonly ICampRepository _repository;
+
+        public CampsController(ICampRepository repository)
         {
-            return Ok(new { Moniker = "TX2020", Name = "Texas Code Camp 2020" });
+            _repository = repository;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get() 
+        {
+            try 
+            {
+                var results = await _repository.GetAllCampsAsync();
+            
+                return Ok(results);
+            }
+            catch (Exception ex) 
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Database failure {ex}");
+            }
         }
     }
 }
