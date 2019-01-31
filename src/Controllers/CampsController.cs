@@ -20,15 +20,15 @@ namespace CoreCodeCamp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get() 
+        public async Task<IActionResult> Get()
         {
-            try 
+            try
             {
                 var results = await _repository.GetAllCampsAsync();
-            
+
                 return Ok(results);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Database failure {ex}");
             }
