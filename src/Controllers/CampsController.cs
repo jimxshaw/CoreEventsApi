@@ -17,7 +17,7 @@ namespace CoreCodeCamp.Controllers
         private readonly ICampRepository _repository;
         private readonly IMapper _mapper;
 
-        public CampsController(ICampRepository repository, 
+        public CampsController(ICampRepository repository,
                                IMapper mapper)
         {
             _repository = repository;
@@ -29,7 +29,7 @@ namespace CoreCodeCamp.Controllers
         {
             try
             {
-                var results = await _repository.GetAllCampsAsync(includeTalks);                
+                var results = await _repository.GetAllCampsAsync(includeTalks);
 
                 return _mapper.Map<CampModel[]>(results);
             }
@@ -40,9 +40,9 @@ namespace CoreCodeCamp.Controllers
         }
 
         [HttpGet("{moniker}")]
-        public async Task<ActionResult<CampModel>> Get(string moniker) 
+        public async Task<ActionResult<CampModel>> Get(string moniker)
         {
-            try 
+            try
             {
                 var result = await _repository.GetCampAsync(moniker);
 
@@ -56,6 +56,19 @@ namespace CoreCodeCamp.Controllers
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Database failure {ex}");
+            }
+        }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<CampModel[]>> SearchByDate(DateTime theDate, bool includeTalks = false) 
+        {
+            try
+            {
+                return Ok(new CampModel[5]);
+            }
+            catch(Exception ex) 
+            {
+                throw;
             }
         }
     }
