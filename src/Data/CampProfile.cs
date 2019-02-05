@@ -10,7 +10,7 @@ namespace CoreCodeCamp.Data
     public class CampProfile : Profile
     {
         public CampProfile()
-        {            
+        {
             this.CreateMap<Camp, CampModel>()
                 .ForMember(cm => cm.Venue, o => o.MapFrom(c => c.Location.VenueName))
                 .ForMember(cm => cm.Address1, o => o.MapFrom(c => c.Location.Address1))
