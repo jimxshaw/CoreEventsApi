@@ -10,6 +10,7 @@ namespace CoreCodeCamp.Models
     public class CampModel
     {
         [Required]
+        [StringLength(100)]
         public string Name { get; set; }
 
         [Required]
