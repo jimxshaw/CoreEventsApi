@@ -90,7 +90,7 @@ namespace CoreCodeCamp.Controllers
             try
             {
                 var existingCamp = await _repository.GetCampAsync(model.Moniker);
-                
+
                 if (existingCamp != null)
                 {
                     return BadRequest("Moniker already in use");
@@ -112,6 +112,21 @@ namespace CoreCodeCamp.Controllers
                     return Created(location, _mapper.Map<CampModel>(camp));
                 }
 
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Database failure {ex}");
+            }
+
+            return BadRequest();
+        }
+
+        [HttpPut("{moniker}")]
+        public async Task<ActionResult<CampModel>> Put(string moniker, CampModel model)
+        {
+            try
+            {
+                
             }
             catch (Exception ex)
             {
