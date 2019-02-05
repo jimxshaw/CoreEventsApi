@@ -8,20 +8,25 @@ using CoreCodeCamp.Data;
 using CoreCodeCamp.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 
 namespace CoreCodeCamp.Controllers
 {
     [Route("api/[controller]")]
+    [ApiController]
     public class CampsController : ControllerBase
     {
         private readonly ICampRepository _repository;
         private readonly IMapper _mapper;
+        private readonly LinkGenerator _linkGenerator;
 
         public CampsController(ICampRepository repository,
-                               IMapper mapper)
+                               IMapper mapper,
+                               LinkGenerator linkGenerator)
         {
             _repository = repository;
             _mapper = mapper;
+            _linkGenerator = linkGenerator;
         }
 
         [HttpGet]
@@ -29,7 +34,7 @@ namespace CoreCodeCamp.Controllers
         {
             try
             {
-                var results = await _repository.GetAllCampsAsync(includeTalks);
+                Camp[] results = await _repository.GetAllCampsAsync(includeTalks);
 
                 return _mapper.Map<CampModel[]>(results);
             }
@@ -44,7 +49,7 @@ namespace CoreCodeCamp.Controllers
         {
             try
             {
-                var result = await _repository.GetCampAsync(moniker);
+                Camp result = await _repository.GetCampAsync(moniker);
 
                 if (result == null)
                 {
@@ -64,7 +69,7 @@ namespace CoreCodeCamp.Controllers
         {
             try
             {
-                var results = await _repository.GetAllCampsByEventDate(theDate, includeTalks);
+                Camp[] results = await _repository.GetAllCampsByEventDate(theDate, includeTalks);
 
                 if (!results.Any())
                 {
@@ -77,6 +82,36 @@ namespace CoreCodeCamp.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Database failure {ex}");
             }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<CampModel>> Post(CampModel model)
+        {
+            try
+            {
+                string location = _linkGenerator.GetPathByAction("Get", "Camps", new { moniker = model.Moniker });
+
+                if (string.IsNullOrWhiteSpace(location))
+                {
+                    return BadRequest("Could not use current moniker");
+                }
+
+                Camp camp = _mapper.Map<Camp>(model);
+
+                _repository.Add(camp);
+
+                if (await _repository.SaveChangesAsync())
+                {
+                    return Created(location, _mapper.Map<CampModel>(camp));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Database failure {ex}");
+            }
+
+            return BadRequest();
         }
     }
 }
