@@ -126,7 +126,19 @@ namespace CoreCodeCamp.Controllers
         {
             try
             {
-                
+                Camp oldCamp = await _repository.GetCampAsync(moniker);
+
+                if (oldCamp == null)
+                {
+                    return NotFound($"Could not find camp with {moniker}");
+                }
+
+                _mapper.Map(model, oldCamp);
+
+                if (await _repository.SaveChangesAsync())
+                {
+                    return _mapper.Map<CampModel>(oldCamp);
+                }
             }
             catch (Exception ex)
             {
