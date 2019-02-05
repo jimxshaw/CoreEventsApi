@@ -60,15 +60,22 @@ namespace CoreCodeCamp.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<ActionResult<CampModel[]>> SearchByDate(DateTime theDate, bool includeTalks = false) 
+        public async Task<ActionResult<CampModel[]>> SearchByDate(DateTime theDate, bool includeTalks = false)
         {
             try
             {
-                return Ok(new CampModel[5]);
+                var results = await _repository.GetAllCampsByEventDate(theDate, includeTalks);
+
+                if (!results.Any())
+                {
+                    return NotFound();
+                }
+
+                return _mapper.Map<CampModel[]>(results);
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
-                throw;
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Database failure {ex}");
             }
         }
     }
